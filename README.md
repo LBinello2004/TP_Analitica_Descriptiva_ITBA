@@ -137,11 +137,11 @@ Tablas generadas:
 Relaciones principales:
 
 - `fact_propiedades.barrio_key` -> `dim_barrio.barrio_key`
-- `fact_propiedades.comuna_key` -> `dim_comuna.comuna_key`
+- `dim_barrio.comuna_key` -> `dim_comuna.comuna_key`
 - `fact_propiedades.cluster_key` -> `dim_cluster.cluster_key`
 - Resto de dimensiones por sus respectivas columnas `*_key`.
 
-`dim_barrio`, `dim_comuna` y `dim_cluster` son dimensiones independientes conectadas directamente con `fact_propiedades`. `dim_cluster` incluye el numero de cluster, nombre descriptivo, etiqueta para Power BI y descripcion de negocio.
+`dim_barrio` y `dim_comuna` quedan conectadas por la jerarquia geografica Barrio -> Comuna. `dim_cluster` sigue como dimension independiente conectada directamente con `fact_propiedades` e incluye el numero de cluster, nombre descriptivo, etiqueta para Power BI y descripcion de negocio.
 
 Las variables numericas discretas como ambientes, dormitorios, banos, piso, conteos y cantidad de amenities quedan directamente en la fact table. Las calles, alturas y links tambien quedan en `fact_propiedades.csv`.
 
@@ -167,7 +167,7 @@ Las variables numericas discretas como ambientes, dormitorios, banos, piso, cont
 2. Importar todos los CSV de la carpeta `snowflake/`.
 3. Usar `fact_propiedades.csv` como tabla central.
 4. Relacionar `fact_propiedades` con cada dimension mediante `*_key`.
-5. Relacionar `dim_barrio`, `dim_comuna` y `dim_cluster` directamente desde `fact_propiedades`.
+5. Respetar la jerarquia geografica: `fact_propiedades -> dim_barrio -> dim_comuna`.
 6. Usar `dim_cluster.cluster_etiqueta_powerbi` para slicers, leyendas y visualizaciones interpretables.
 
 ---
