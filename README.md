@@ -26,8 +26,6 @@ Este repositorio contiene un pipeline completo para extraer, geolocalizar, enriq
 9. 09_Reduccion_de_Dimensionalidad.ipynb -> Argenprop_limpio_con_indices.csv
                                                      |
 10. 10_Prediccion.ipynb                  -> modelos predictivos
-                                                     |
-11. 11_PowerBI.ipynb                     -> snowflake/*.csv para Power BI
 ```
 
 ---
@@ -115,36 +113,6 @@ Genera indices sinteticos mediante PCA/MCA:
 ### `10_Prediccion.ipynb`
 Entrena y compara modelos predictivos sobre el dataset final con indices. El objetivo es complementar el analisis descriptivo con una mirada predictiva sobre precio.
 
-### `11_PowerBI.ipynb`
-Prepara los datos para Power BI en formato Snowflake Schema.
-
-**Salida:** carpeta `snowflake/`
-
-Tablas generadas:
-
-- `fact_propiedades.csv`
-- `dim_barrio.csv`
-- `dim_comuna.csv`
-- `dim_cluster.csv`
-- `dim_estado.csv`
-- `dim_disposicion.csv`
-- `dim_tipo_unidad.csv`
-- `dim_subte_cercano.csv`
-- `dim_linea_subte.csv`
-- `dim_hospital_cercano.csv`
-- `dim_avenida_cercana.csv`
-
-Relaciones principales:
-
-- `fact_propiedades.barrio_key` -> `dim_barrio.barrio_key`
-- `dim_barrio.comuna_key` -> `dim_comuna.comuna_key`
-- `fact_propiedades.cluster_key` -> `dim_cluster.cluster_key`
-- Resto de dimensiones por sus respectivas columnas `*_key`.
-
-`dim_barrio` y `dim_comuna` quedan conectadas por la jerarquia geografica Barrio -> Comuna. `dim_cluster` sigue como dimension independiente conectada directamente con `fact_propiedades` e incluye el numero de cluster, nombre descriptivo, etiqueta para Power BI y descripcion de negocio.
-
-Las variables numericas discretas como ambientes, dormitorios, banos, piso, conteos y cantidad de amenities quedan directamente en la fact table. Las calles, alturas y links tambien quedan en `fact_propiedades.csv`.
-
 ---
 
 ## Datasets generados
@@ -157,18 +125,6 @@ Las variables numericas discretas como ambientes, dormitorios, banos, piso, cont
 | `Argenprop_limpio.csv` | Limpieza + correcciones | Dataset limpio, imputado y con prefijos semanticos. |
 | `diccionario_variables_limpio.csv` | Diccionario | Mapeo entre nombre original, tipo de variable y nombre final. |
 | `Argenprop_limpio_con_indices.csv` | Indices | Dataset final con indices PCA/MCA y variables sinteticas. |
-| `snowflake/*.csv` | Power BI | Fact table y dimensiones listas para importar. |
-
----
-
-## Preparacion para Power BI
-
-1. Abrir Power BI Desktop.
-2. Importar todos los CSV de la carpeta `snowflake/`.
-3. Usar `fact_propiedades.csv` como tabla central.
-4. Relacionar `fact_propiedades` con cada dimension mediante `*_key`.
-5. Respetar la jerarquia geografica: `fact_propiedades -> dim_barrio -> dim_comuna`.
-6. Usar `dim_cluster.cluster_etiqueta_powerbi` para slicers, leyendas y visualizaciones interpretables.
 
 ---
 
