@@ -27,7 +27,7 @@ Este repositorio contiene un pipeline completo para extraer, geolocalizar, enriq
                                                      |
 10. 10_Prediccion.ipynb                  -> modelos predictivos
                                                      |
-11. 11_Snowflake_PowerBI.ipynb           -> snowflake/*.csv para Power BI
+11. 11_PowerBI.ipynb                     -> snowflake/*.csv para Power BI
 ```
 
 ---
@@ -87,7 +87,7 @@ Define hipotesis y KPIs para decision inmobiliaria. Incluye precio por m2, profu
 ### `07_Correciones_Entrega2.ipynb`
 Corrige y estandariza el dataset final:
 
-- Agrega el cluster por barrio.
+- Agrega el cluster sintetico usado para segmentar las propiedades.
 - Renombra variables con prefijos semanticos:
   - `original_`: variables observadas o extraidas del aviso publicado.
   - `imputada_`: variables completadas durante limpieza.
@@ -115,7 +115,7 @@ Genera indices sinteticos mediante PCA/MCA:
 ### `10_Prediccion.ipynb`
 Entrena y compara modelos predictivos sobre el dataset final con indices. El objetivo es complementar el analisis descriptivo con una mirada predictiva sobre precio.
 
-### `11_Snowflake_PowerBI.ipynb`
+### `11_PowerBI.ipynb`
 Prepara los datos para Power BI en formato Snowflake Schema.
 
 **Salida:** carpeta `snowflake/`
@@ -137,9 +137,11 @@ Tablas generadas:
 Relaciones principales:
 
 - `fact_propiedades.barrio_key` -> `dim_barrio.barrio_key`
-- `dim_barrio.comuna_key` -> `dim_comuna.comuna_key`
+- `fact_propiedades.comuna_key` -> `dim_comuna.comuna_key`
 - `fact_propiedades.cluster_key` -> `dim_cluster.cluster_key`
 - Resto de dimensiones por sus respectivas columnas `*_key`.
+
+`dim_barrio`, `dim_comuna` y `dim_cluster` son dimensiones independientes conectadas directamente con `fact_propiedades`. `dim_cluster` incluye el numero de cluster, nombre descriptivo, etiqueta para Power BI y descripcion de negocio.
 
 Las variables numericas discretas como ambientes, dormitorios, banos, piso, conteos y cantidad de amenities quedan directamente en la fact table. Las calles, alturas y links tambien quedan en `fact_propiedades.csv`.
 
@@ -165,7 +167,7 @@ Las variables numericas discretas como ambientes, dormitorios, banos, piso, cont
 2. Importar todos los CSV de la carpeta `snowflake/`.
 3. Usar `fact_propiedades.csv` como tabla central.
 4. Relacionar `fact_propiedades` con cada dimension mediante `*_key`.
-5. Respetar la jerarquia geografica: `fact_propiedades -> dim_barrio -> dim_comuna`.
+5. Relacionar `dim_barrio`, `dim_comuna` y `dim_cluster` directamente desde `fact_propiedades`.
 6. Usar `dim_cluster.cluster_etiqueta_powerbi` para slicers, leyendas y visualizaciones interpretables.
 
 ---
