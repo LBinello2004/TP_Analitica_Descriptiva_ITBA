@@ -1,135 +1,188 @@
-# Proyecto: Análisis de Departamentos en Venta en CABA (Argenprop)
+# Proyecto: Analisis de Departamentos en Venta en CABA (Argenprop)
 
-Este repositorio contiene el pipeline completo para extraer, geolocalizar, enriquecer, limpiar y analizar datos de departamentos en venta en la Ciudad Autónoma de Buenos Aires publicados en Argenprop. El análisis se orienta al perfil de un inversor inmobiliario tipo *flipper*, cuyo objetivo es identificar propiedades potencialmente subvaluadas con margen de valorización mediante refacción y posterior reventa.
+Este repositorio contiene un pipeline completo para extraer, geolocalizar, enriquecer, limpiar, analizar y preparar datos de departamentos en venta en CABA publicados en Argenprop. El trabajo esta orientado a un perfil de inversor inmobiliario tipo *flipper*, interesado en detectar propiedades con potencial de valorizacion mediante refaccion y posterior reventa.
 
 ---
 
 ## Flujo del pipeline
 
-```
-1. scraper.py                       →  argenprop_1776007342.tsv         (dataset crudo)
-                                                  ↓
-2. mapeo_latitud_longitud.ipynb     →  Argenprop_Lat_Lon.tsv            (con coordenadas)
-                                                  ↓
-3. enrichment.ipynb                 →  Argenprop_Enriched.tsv           (enriquecido geoespacial)
-                                                  ↓
-4. Limpieza.ipynb                   →  Argenprop_limpio.csv             (limpio e imputado)
-                                                  ↓
-5. EDA.ipynb                        →  Análisis exploratorio
-                                                  ↓
-6. Hipotesis_Y_KPIs.ipynb           →  Hipótesis, KPIs e índice de oportunidad
+```text
+1. 01_scraper.py                         -> argenprop_1776007342.tsv
+                                                     |
+2. 02_mapeo_latitud_longitud.ipynb       -> Argenprop_Lat_Lon.tsv
+                                                     |
+3. 03_enrichment.ipynb                   -> Argenprop_Enriched.tsv
+                                                     |
+4. 04_Limpieza.ipynb                     -> Argenprop_limpio.csv
+                                                     |
+5. 05_EDA_Y_Clusters.ipynb               -> EDA + clusters de barrios
+                                                     |
+6. 06_Hipotesis_Y_KPIs.ipynb             -> hipotesis, KPIs e indice de oportunidad
+                                                     |
+7. 07_Correciones_Entrega2.ipynb         -> prefijos semanticos + diccionario
+                                                     |
+8. 08_Validacion_Estadistica_Formal.ipynb -> validacion estadistica de hipotesis
+                                                     |
+9. 09_Reduccion_de_Dimensionalidad.ipynb -> Argenprop_limpio_con_indices.csv
+                                                     |
+10. 10_Prediccion.ipynb                  -> modelos predictivos
+                                                     |
+11. 11_Snowflake_PowerBI.ipynb           -> snowflake/*.csv para Power BI
 ```
 
 ---
 
-## Archivos
+## Archivos principales
 
-### `1. scraper.py`
-Script principal de scraping. Usa **Playwright** para navegar Argenprop con un browser real (visible) y **aiohttp** para descargar las páginas de detalle en paralelo.
+### `01_scraper.py`
+Script de scraping sobre Argenprop. Usa Playwright para navegar con browser real y `aiohttp` para descargar paginas de detalle en paralelo.
 
-Características clave:
-- Scrapea las páginas de listado de departamentos en venta en CABA (`argenprop.com/departamentos/venta/capital-federal`).
-- Manejo automático de **CAPTCHA**: cuando detecta uno, pausa y espera que el usuario lo resuelva manualmente en el browser.
-- **Checkpoint automático**: si se interrumpe, retoma desde la última página guardada.
-- Guarda incrementalmente cada 50 propiedades en la carpeta `output/`.
-- Extrae: precio, expensas, dirección (calle, altura, piso), descripción, características del departamento (ambientes, dormitorios, baños, estado, antigüedad, amenities, etc.).
+Extrae precio, expensas, direccion, piso, ambientes, dormitorios, banos, estado, antiguedad, descripcion, amenities y caracteristicas publicadas.
 
 **Salida:** `argenprop_1776007342.tsv`
 
----
-
-### `2. mapeo_latitud_longitud.ipynb`
-Notebook que **geocodifica** las direcciones del dataset crudo, convirtiendo la calle y altura de cada propiedad en coordenadas geográficas (latitud y longitud).
-
-- Usa la API gratuita de **Nominatim (OpenStreetMap)**.
-- Valida que las coordenadas obtenidas caigan dentro de los límites geográficos de CABA.
-- Procesa las propiedades de forma asíncrona con un delay para respetar los límites de la API.
+### `02_mapeo_latitud_longitud.ipynb`
+Geocodifica las direcciones del dataset crudo usando Nominatim/OpenStreetMap. Valida que las coordenadas caigan dentro de CABA.
 
 **Salida:** `Argenprop_Lat_Lon.tsv`
 
----
+### `03_enrichment.ipynb`
+Enriquece el dataset con variables geoespaciales y urbanas:
 
-### `3. enrichment.ipynb`
-Notebook que **enriquece geoespacialmente** el dataset geocodificado, cruzando cada propiedad con datos públicos de la ciudad.
-
-Agrega columnas como:
-- `Barrio` y `Comuna`: mediante un join espacial con el polígono de barrios de CABA.
-- `Dist_Subte_m`, `Subte_cercano`, `Linea_subte`: distancia y línea de la boca de subte más cercana.
-- `Dist_Hospital_m`, `Hospital_cercano`: distancia al hospital público más cercano.
-- `Dist_Colegio_m`, `Colegios_500m`: distancia al colegio más cercano y conteo en radio de 500 m.
-- `Dist_Comisaria_m`, `Dist_Gimnasio_m`, `Dist_Supermercado_m`, `Supermercados_500m`.
-- `Dist_Avenida_m`, `Avenida_cercana`.
-- `Paradas_colectivo_300m`: cantidad de paradas de colectivo en un radio de 300 m.
-
-Usa **GeoPandas** y proyección EPSG:22185 para calcular distancias con precisión métrica.
+- `Barrio` y `Comuna`.
+- Distancia a subte, hospitales, colegios, comisarias, gimnasios, supermercados y avenidas.
+- Conteos de colegios, supermercados y paradas de colectivo en radios definidos.
 
 **Salida:** `Argenprop_Enriched.tsv`
 
----
+### `04_Limpieza.ipynb`
+Limpia e imputa el dataset:
 
-### `4. Limpieza.ipynb`
-Notebook de **limpieza y preparación final** del dataset. Sus pasos principales:
-
-- **Conversión de tipos**: parseo de strings monetarios (`Precio`, `Expensas`), superficies (`Sup_Cubierta_m2`, `Sup_Total_m2`) y `Piso` (incluyendo PB).
-- **Consistencia**: corrección de casos donde `Sup_Cubierta_m2 > Sup_Total_m2` y eliminación de valores negativos/imposibles.
-- **Detección de outliers** mediante transformación logarítmica y *z-score* (umbral |z| > 3) sobre precio, expensas, antigüedad y superficies.
-- **Tests de normalidad** (Shapiro-Wilk y D'Agostino) con QQ-plots para validar la transformación.
-- **Eliminación de columnas** con alto porcentaje de faltantes (`Toilettes`, `Tipo_Balcon`, `Estado_Edificio`, etc.) y sin variabilidad.
-- **Imputación de variables numéricas** (`Precio`, `Expensas`, superficies, ambientes, dormitorios) con **KNNImputer**.
-- **Imputación jerárquica por mediana** de `Antiguedad` usando combinaciones de `Barrio`, `Comuna`, `Estado`, `Tipo_Unidad` y `Ambientes`, evaluadas previamente con tests de Spearman y Kruskal-Wallis.
-- **Imputación categórica** (`Estado`, `Tipo_Unidad`, `Disposicion`, `Piso`) con la categoría `"No disponible"`.
+- Conversion de precios, expensas, superficies y piso.
+- Correccion de inconsistencias de superficie.
+- Deteccion y tratamiento de outliers.
+- Imputacion numerica con KNN.
+- Imputacion jerarquica de antiguedad.
+- Imputacion categorica con `"No disponible"`.
 
 **Salida:** `Argenprop_limpio.csv`
 
----
+### `05_EDA_Y_Clusters.ipynb`
+Realiza el analisis exploratorio y segmenta barrios con KMeans. El analisis incluye distribuciones, correlaciones, boxplots por variables categoricas, analisis espacial y nombres interpretables para clusters.
 
-### `5. EDA.ipynb`
-Notebook de **análisis exploratorio de datos** sobre el dataset limpio. Incluye:
+Clusters definidos:
 
-- Distribución del precio en USD y su transformación logarítmica (asimetría positiva ~2.72).
-- Relaciones entre `Precio` y variables numéricas (superficies, expensas, distancias a puntos de interés) mediante scatterplots y matrices de correlación.
-- Análisis de `Precio` vs variables categóricas (`Estado`, `Tipo_Unidad`, `Disposicion`, `Barrio`) con boxplots.
-- Análisis de variables binarias (amenities) por tercil de precio.
-- Visualización espacial de precios en CABA sobre el mapa de barrios.
-- Análisis combinado de `Precio_m2` por barrio, accesibilidad y otras variables.
+- Cluster 0: Barrios tradicionales accesibles.
+- Cluster 1: Premium consolidado.
+- Cluster 2: Residencial medio-alto.
+- Cluster 3: Residencial accesible.
+- Cluster 4: Alto valor por m2.
+- Cluster 5: Compactos economicos.
 
----
+### `06_Hipotesis_Y_KPIs.ipynb`
+Define hipotesis y KPIs para decision inmobiliaria. Incluye precio por m2, profundidad de mercado, stock mejorable, dotacion de amenities, accesibilidad urbana, descuento frente a comparables e indice de oportunidad de flip.
 
-### `6. Hipotesis_Y_KPIs.ipynb`
-Notebook que define las **hipótesis de inversión y los KPIs** orientados al perfil flipper. Estructurado en niveles:
+> Los KPIs usan precios publicados, no precios de cierre. Sirven para priorizar oportunidades, no para estimar ROI real.
 
-**Nivel descriptivo:**
-1. Precio promedio y mediano por m² por barrio (precio de entrada por zona).
-2. Profundidad de mercado por barrio (participación de oferta como proxy de liquidez).
-3. Stock refaccionable y mejorable (% `A Refaccionar` y % `A Refaccionar + Regular + Bueno`).
-4. Frecuencia de amenities por rango de precio.
-5. **Índice de accesibilidad urbana** = 0.25·subte + 0.20·colectivos + 0.20·avenida + 0.15·hospital + 0.10·colegio + 0.10·supermercado.
+### `07_Correciones_Entrega2.ipynb`
+Corrige y estandariza el dataset final:
 
-**Nivel diagnóstico:**
-6. Descuento frente a comparables (mismo barrio + tipo de unidad + ambientes), con métricas de intensidad de subvaluación.
-7. Prima de precio asociada a mayor dotación de amenities por barrio.
-8. Precio por m² según cuartil de accesibilidad.
-9. Precio por m² según distancia al subte.
-10. **Índice de oportunidad de flip** = 0.40·descuento + 0.20·accesibilidad + 0.15·potencial de zona + 0.15·estado mejorable + 0.10·profundidad de mercado.
+- Agrega el cluster por barrio.
+- Renombra variables con prefijos semanticos:
+  - `original_`: variables observadas o extraidas del aviso publicado.
+  - `imputada_`: variables completadas durante limpieza.
+  - `enriquecida_`: variables agregadas por geocodificacion o cruces geoespaciales.
+  - `sintetica_`: identificadores, clusters e indices calculados.
+- Genera `diccionario_variables_limpio.csv`.
 
-> Los KPIs se calculan sobre precios de publicación (no de cierre) y no contemplan costos de obra, días en mercado ni margen de negociación. Funcionan como scoring de priorización, no como ROI real.
+### `08_Validacion_Estadistica_Formal.ipynb`
+Formaliza pruebas estadisticas sobre hipotesis del analisis descriptivo. Evalua relaciones entre precio, precio por m2, amenities, accesibilidad, subvaluacion y variables de contexto.
+
+### `09_Reduccion_de_Dimensionalidad.ipynb`
+Genera indices sinteticos mediante PCA/MCA:
+
+- `sintetica_indice_entorno_integral_pca`
+- `sintetica_indice_servicios_barriales_pca`
+- `sintetica_indice_conectividad_pca`
+- `sintetica_indice_amplitud_pca`
+- `sintetica_indice_lujo_confort_mca`
+- `sintetica_cantidad_amenities`
+- `sintetica_score_antiguedad_nueva`
+- `sintetica_precio_m2`
+
+**Salida:** `Argenprop_limpio_con_indices.csv`
+
+### `10_Prediccion.ipynb`
+Entrena y compara modelos predictivos sobre el dataset final con indices. El objetivo es complementar el analisis descriptivo con una mirada predictiva sobre precio.
+
+### `11_Snowflake_PowerBI.ipynb`
+Prepara los datos para Power BI en formato Snowflake Schema.
+
+**Salida:** carpeta `snowflake/`
+
+Tablas generadas:
+
+- `fact_propiedades.csv`
+- `dim_barrio.csv`
+- `dim_comuna.csv`
+- `dim_cluster.csv`
+- `dim_estado.csv`
+- `dim_disposicion.csv`
+- `dim_tipo_unidad.csv`
+- `dim_subte_cercano.csv`
+- `dim_linea_subte.csv`
+- `dim_hospital_cercano.csv`
+- `dim_avenida_cercana.csv`
+
+Relaciones principales:
+
+- `fact_propiedades.barrio_key` -> `dim_barrio.barrio_key`
+- `dim_barrio.comuna_key` -> `dim_comuna.comuna_key`
+- `fact_propiedades.cluster_key` -> `dim_cluster.cluster_key`
+- Resto de dimensiones por sus respectivas columnas `*_key`.
+
+Las variables numericas discretas como ambientes, dormitorios, banos, piso, conteos y cantidad de amenities quedan directamente en la fact table. Las calles, alturas y links tambien quedan en `fact_propiedades.csv`.
 
 ---
 
 ## Datasets generados
 
-| Archivo | Etapa | Filas aprox. | Descripción |
-|---|---|---|---|
-| `argenprop_1776007342.tsv` | Scraping | ~8.000 | Dataset crudo: precio, expensas, dirección, descripción, características y amenities. Sin geo. |
-| `Argenprop_Lat_Lon.tsv` | Geocoding | ~8.000 | Agrega `Latitud`, `Longitud` y `Procesada`. Se descartan direcciones no geocodificables o fuera de CABA. |
-| `Argenprop_Enriched.tsv` | Enrichment | ~8.000 | Incorpora barrio, comuna y proximidad a transporte, salud, educación, seguridad y comercio. 67 columnas. |
-| `Argenprop_limpio.csv` | Limpieza | ~7.250 | Dataset final imputado, sin outliers extremos y con tipos consistentes. Listo para EDA y KPIs. |
+| Archivo | Etapa | Descripcion |
+|---|---|---|
+| `argenprop_1776007342.tsv` | Scraping | Dataset crudo extraido desde Argenprop. |
+| `Argenprop_Lat_Lon.tsv` | Geocoding | Dataset con latitud y longitud. |
+| `Argenprop_Enriched.tsv` | Enrichment | Dataset con barrio, comuna y variables urbanas. |
+| `Argenprop_limpio.csv` | Limpieza + correcciones | Dataset limpio, imputado y con prefijos semanticos. |
+| `diccionario_variables_limpio.csv` | Diccionario | Mapeo entre nombre original, tipo de variable y nombre final. |
+| `Argenprop_limpio_con_indices.csv` | Indices | Dataset final con indices PCA/MCA y variables sinteticas. |
+| `snowflake/*.csv` | Power BI | Fact table y dimensiones listas para importar. |
 
 ---
 
-## Dependencias
+## Preparacion para Power BI
 
-```
-pip install playwright aiohttp beautifulsoup4 pandas numpy scipy scikit-learn matplotlib seaborn geopandas shapely requests
+1. Abrir Power BI Desktop.
+2. Importar todos los CSV de la carpeta `snowflake/`.
+3. Usar `fact_propiedades.csv` como tabla central.
+4. Relacionar `fact_propiedades` con cada dimension mediante `*_key`.
+5. Respetar la jerarquia geografica: `fact_propiedades -> dim_barrio -> dim_comuna`.
+6. Usar `dim_cluster.cluster_etiqueta_powerbi` para slicers, leyendas y visualizaciones interpretables.
+
+---
+
+## Dependencias principales
+
+```bash
+pip install playwright aiohttp beautifulsoup4 pandas numpy scipy scikit-learn matplotlib seaborn geopandas shapely requests prince
 playwright install chromium
 ```
+---
+
+## Limitaciones
+
+- Los precios son de publicacion, no de cierre.
+- No se incorporan costos de obra, impuestos, comisiones ni dias en mercado.
+- Los scores e indices son herramientas de priorizacion, no una estimacion directa de rentabilidad.
+- La calidad de geocodificacion depende de la precision de las direcciones publicadas.
+
+Última actualización del README: 2026-06-03

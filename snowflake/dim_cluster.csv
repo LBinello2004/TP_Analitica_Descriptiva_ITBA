@@ -1,0 +1,7 @@
+﻿cluster_key,cluster_numero,cluster_nombre,cluster_etiqueta_powerbi,cluster_descripcion
+1,0,Barrios tradicionales accesibles,Cluster 0 - Barrios tradicionales accesibles,"Precios bajos, propiedades mas antiguas y valores de m2 relativamente bajos."
+2,1,Premium consolidado,Cluster 1 - Premium consolidado,"Mayor precio promedio, mayor superficie, mas banos y precio por m2 muy elevado."
+3,2,Residencial medio-alto,Cluster 2 - Residencial medio-alto,"Valores intermedios-altos, buena superficie y expensas elevadas."
+4,3,Residencial accesible,Cluster 3 - Residencial accesible,"Menor cantidad de ambientes y banos, con precios relativamente bajos."
+5,4,Alto valor por m2,Cluster 4 - Alto valor por m2,Propiedades con pocos dormitorios pero alto precio por m2 y precios elevados.
+6,5,Compactos economicos,Cluster 5 - Compactos economicos,"Departamentos mas chicos, con menor superficie y precios bajos/intermedios."
