@@ -8,7 +8,7 @@ Piso,imputada,imputada_Piso
 Link,original,original_Link
 Ambientes,imputada,imputada_Ambientes
 Dormitorios,imputada,imputada_Dormitorios
-Banos,original,original_Banos
+Baños,original,original_Banos
 Estado,imputada,imputada_Estado
 Antiguedad,imputada,imputada_Antiguedad
 Disposicion,imputada,imputada_Disposicion
@@ -19,9 +19,9 @@ Aire_acondicionado_individual,original,original_Aire_acondicionado_individual
 Losa_radiante,original,original_Losa_radiante
 Gas_natural,original,original_Gas_natural
 Agua_corriente,original,original_Agua_corriente
-Balcon,original,original_Balcon
+Balcón,original,original_Balcon
 Terraza,original,original_Terraza
-Jardin,original,original_Jardin
+Jardín,original,original_Jardin
 Patio,original,original_Patio
 Baulera,original,original_Baulera
 Cochera,original,original_Cochera
