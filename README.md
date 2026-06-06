@@ -7,7 +7,9 @@ Este repositorio contiene un pipeline completo para extraer, geolocalizar, enriq
 ## Flujo del pipeline
 
 ```text
-1. 01_scraper.py                         -> argenprop_1776007342.tsv
+1. 01_scraper.py                         -> output/argenprop_<timestamp>.tsv
+                                                     |
+   Dataset consolidado en la raiz        -> argenprop_1776007342.tsv
                                                      |
 2. 02_mapeo_latitud_longitud.ipynb       -> Argenprop_Lat_Lon.tsv
                                                      |
@@ -21,7 +23,7 @@ Este repositorio contiene un pipeline completo para extraer, geolocalizar, enriq
                                                      |
 7. 07_Correciones_Entrega2.ipynb         -> prefijos semanticos + diccionario
                                                      |
-8. 08_Validacion_Estadistica_Formal.ipynb -> validacion estadistica de hipotesis
+8. 08_Validación_Estadística_Formal.ipynb -> validacion estadistica de hipotesis
                                                      |
 9. 09_Reduccion_de_Dimensionalidad.ipynb -> Argenprop_limpio_con_indices.csv
                                                      |
@@ -37,7 +39,9 @@ Script de scraping sobre Argenprop. Usa Playwright para navegar con browser real
 
 Extrae precio, expensas, direccion, piso, ambientes, dormitorios, banos, estado, antiguedad, descripcion, amenities y caracteristicas publicadas.
 
-**Salida:** `argenprop_1776007342.tsv`
+**Salida:** `output/argenprop_<timestamp>.tsv`
+
+Para reproducir las etapas posteriores, el repositorio incluye en la raiz el dataset consolidado `argenprop_1776007342.tsv`, utilizado como entrada por el notebook de geocodificacion.
 
 ### `02_mapeo_latitud_longitud.ipynb`
 Geocodifica las direcciones del dataset crudo usando Nominatim/OpenStreetMap. Valida que las coordenadas caigan dentro de CABA.
@@ -93,7 +97,7 @@ Corrige y estandariza el dataset final:
   - `sintetica_`: identificadores, clusters e indices calculados.
 - Genera `diccionario_variables_limpio.csv`.
 
-### `08_Validacion_Estadistica_Formal.ipynb`
+### `08_Validación_Estadística_Formal.ipynb`
 Formaliza pruebas estadisticas sobre hipotesis del analisis descriptivo. Evalua relaciones entre precio, precio por m2, amenities, accesibilidad, subvaluacion y variables de contexto.
 
 ### `09_Reduccion_de_Dimensionalidad.ipynb`
@@ -111,7 +115,9 @@ Genera indices sinteticos mediante PCA/MCA:
 **Salida:** `Argenprop_limpio_con_indices.csv`
 
 ### `10_Prediccion.ipynb`
-Entrena y compara modelos predictivos sobre el dataset final con indices. El objetivo es complementar el analisis descriptivo con una mirada predictiva sobre precio.
+Entrena y compara Ridge Regression como baseline y Random Forest como modelo no lineal para estimar el precio publicado.
+
+Para evitar fuga de informacion, parte de `Argenprop_Enriched.tsv`, antes de la imputacion general del pipeline. Utiliza solamente precios observados, no imputa el target y completa las variables explicativas dentro de cada modelo usando exclusivamente train. Separa train/test por ubicacion, evitando que propiedades de un mismo edificio aparezcan en ambos conjuntos, e incorpora validacion agrupada repetida para evaluar la estabilidad.
 
 ---
 
@@ -119,7 +125,8 @@ Entrena y compara modelos predictivos sobre el dataset final con indices. El obj
 
 | Archivo | Etapa | Descripcion |
 |---|---|---|
-| `argenprop_1776007342.tsv` | Scraping | Dataset crudo extraido desde Argenprop. |
+| `output/argenprop_<timestamp>.tsv` | Scraping | Salida generada por cada ejecucion del scraper. |
+| `argenprop_1776007342.tsv` | Scraping consolidado | Dataset crudo incluido en la raiz y usado por las etapas posteriores. |
 | `Argenprop_Lat_Lon.tsv` | Geocoding | Dataset con latitud y longitud. |
 | `Argenprop_Enriched.tsv` | Enrichment | Dataset con barrio, comuna y variables urbanas. |
 | `Argenprop_limpio.csv` | Limpieza + correcciones | Dataset limpio, imputado y con prefijos semanticos. |
@@ -143,4 +150,4 @@ playwright install chromium
 - Los scores e indices son herramientas de priorizacion, no una estimacion directa de rentabilidad.
 - La calidad de geocodificacion depende de la precision de las direcciones publicadas.
 
-Última actualización del README: 2026-06-03
+Última actualización del README: 2026-06-06
