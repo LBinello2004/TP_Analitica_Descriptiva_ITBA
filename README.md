@@ -128,6 +128,32 @@ Entrena y compara modelos predictivos sobre el dataset final con indices. El obj
 
 ---
 
+## Transformaciones y analisis realizados
+
+El proyecto incorpora transformaciones sucesivas para pasar de avisos publicados a un dataset analitico final:
+
+- Extraccion y normalizacion inicial de atributos publicados: precio, expensas, superficie, ambientes, dormitorios, banos, antiguedad, estado, amenities y caracteristicas del aviso.
+- Geocodificacion de direcciones y validacion espacial para conservar coordenadas ubicadas dentro de CABA.
+- Enriquecimiento urbano con variables de barrio, comuna, distancias a puntos de interes y conteos de servicios cercanos.
+- Limpieza de tipos, conversion de unidades, tratamiento de inconsistencias de superficie, deteccion de outliers e imputaciones numericas y categoricas.
+- Segmentacion de barrios mediante clustering para resumir patrones territoriales de precio, accesibilidad y caracteristicas del stock.
+- Construccion de KPIs orientados a decision inmobiliaria, incluyendo precio por m2, descuento frente a comparables, accesibilidad urbana, dotacion de amenities e indice de oportunidad de flip.
+- Validacion estadistica formal de hipotesis descriptivas mediante pruebas sobre relaciones entre precio, amenities, accesibilidad, subvaluacion y contexto urbano.
+- Reduccion de dimensionalidad con PCA/MCA para sintetizar informacion de entorno, servicios, conectividad, amplitud y lujo/confort.
+- Modelado predictivo como complemento del analisis descriptivo, usando el dataset final con indices sinteticos.
+
+---
+
+## Decisiones metodologicas adoptadas
+
+- Se trabajo con precios publicados de Argenprop.
+- Se valido la geocodificacion para restringir el analisis a propiedades ubicadas dentro de CABA.
+- Se aplicaron imputaciones diferenciadas segun tipo de variable: KNN para variables numericas, reglas jerarquicas para antiguedad y categoria `"No disponible"` para faltantes categoricos.
+- Se usaron prefijos semanticos (`original_`, `imputada_`, `enriquecida_`, `sintetica_`) para mejorar trazabilidad entre dato observado, dato imputado, enriquecimiento externo y variable calculada.
+- Se documentaron por separado las etapas de analisis descriptivo, validacion estadistica, reduccion de dimensionalidad y prediccion.
+
+---
+
 ## Dependencias principales
 
 ```bash
@@ -143,4 +169,11 @@ playwright install chromium
 - Los scores e indices son herramientas de priorizacion, no una estimacion directa de rentabilidad.
 - La calidad de geocodificacion depende de la precision de las direcciones publicadas.
 
-Última actualización del README: 2026-06-03
+---
+
+## Proximos pasos previstos para la entrega final
+
+- Consolidar los hallazgos principales en una narrativa ejecutiva orientada al perfil inversor definido.
+- Documentar metricas y resultados del modelo predictivo, incluyendo comparacion de modelos y criterios de seleccion.
+
+Última actualización del README: 2026-06-11
