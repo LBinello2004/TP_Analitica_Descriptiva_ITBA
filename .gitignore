@@ -3,3 +3,8 @@
 __pycache__/
 *.py[cod]
 data/raw/output/
+
+# Archivos temporales de Office (lock files) y renders de QA
+~$*
+presentacion/render*/
+notebooks/_tmp*.ipynb
