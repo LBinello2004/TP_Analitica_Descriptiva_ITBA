@@ -1,0 +1,11 @@
+﻿hipotesis,test,estadistico,p_value,tamano_efecto,medida_efecto,n,grupos,p_value_ajustado_holm,decision
+Precio por m2 difiere entre barrios,Kruskal-Wallis,2212.9733840019157,0.0,0.30477154269689827,epsilon^2,7164,44,0.0,Se rechaza H0
+Accesibilidad difiere entre barrios,Kruskal-Wallis,4130.150653086782,0.0,0.5740380130739862,epsilon^2,7164,44,0.0,Se rechaza H0
+Precio por m2 difiere por dotacion de amenities,Kruskal-Wallis,206.00752571381702,1.8451606148514798e-45,0.028170053260676196,epsilon^2,7245,3,9.225803074257399e-45,Se rechaza H0
+Precio por m2 difiere por accesibilidad,Kruskal-Wallis,169.83419643297557,1.3818484433013633e-36,0.023040214947241483,epsilon^2,7245,4,5.527393773205453e-36,Se rechaza H0
+Precio por m2 difiere por distancia al subte,Kruskal-Wallis,148.29127263265605,4.730020869658834e-31,0.01992973378904089,epsilon^2,7245,5,1.4190062608976501e-30,Se rechaza H0
+Oportunidad difiere entre clusters,Kruskal-Wallis,868.6581092985149,1.6139102325848142e-185,0.11930627286897567,epsilon^2,7245,6,1.1297371628093699e-184,Se rechaza H0
+La oferta no se distribuye uniformemente entre barrios,Chi-cuadrado bondad de ajuste,6095.786749482401,0.0,0.1337971180342632,w,7245,48,0.0,Se rechaza H0
+El stock mejorable depende del barrio,Chi-cuadrado independencia,121.10461900164144,1.847882571711417e-08,0.12928887573480707,Cramers V,7245,48,3.695765143422834e-08,Se rechaza H0
+El descuento fuerte depende del barrio,Chi-cuadrado independencia,54.805041468457446,0.04786355289472826,0.09267570170737648,Cramers V,6381,40,0.04786355289472826,Se rechaza H0
+Amenities y precio por m2 estan asociados,Spearman,0.19232968152431376,2.536004559458892e-61,0.19232968152431376,|rho|,7245,2,1.521602735675335e-60,Se rechaza H0
