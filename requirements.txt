@@ -11,6 +11,7 @@ nbformat
 numpy
 pandas
 playwright
+python-pptx
 prince
 requests
 scikit-learn

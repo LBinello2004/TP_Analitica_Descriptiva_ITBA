@@ -1,0 +1,79 @@
+{
+  "assets": {
+    "portada": "01_mapa_cover.png",
+    "precio_barrio": "02_precio_m2_barrio.png",
+    "precio_barrio_compacto": "02_precio_m2_barrio_compacto.png",
+    "ranking_barrios": "02_ranking_barrios_oportunidad.png",
+    "stock_descuento": "03_stock_mejorable_descuento.png",
+    "importancia_modelo": "04_importancia_variables.png",
+    "accesibilidad": "06_accesibilidad_precio.png",
+    "amenities": "07_amenities_precio.png",
+    "amenities_compacto": "07_amenities_precio_compacto.png",
+    "pca_negocio": "08_pca_lentes_negocio.png",
+    "clusters_perfiles": "09_clusters_perfiles.png"
+  },
+  "hallazgos": {
+    "accesibilidad_alta_vs_baja_pct": -11.666666666666659,
+    "amenities_alta_vs_baja_usd_m2": 392.1505938769342
+  },
+  "metricas_modelos": [
+    {
+      "modelo": "Ridge baseline",
+      "MAE_USD": 49138.0,
+      "RMSE_USD": 104604.0,
+      "MedAE_USD": 23551.0,
+      "MAPE_%": 25.04,
+      "R2": 0.588
+    },
+    {
+      "modelo": "Random Forest",
+      "MAE_USD": 41337.0,
+      "RMSE_USD": 90446.0,
+      "MedAE_USD": 19477.0,
+      "MAPE_%": 21.13,
+      "R2": 0.692
+    }
+  ],
+  "variables_importantes": [
+    {
+      "feature": "Sup_Total_m2_num",
+      "aumento_MAE_USD": 28538.02911479763,
+      "std": 887.0794529994107
+    },
+    {
+      "feature": "Sup_Cubierta_m2_num",
+      "aumento_MAE_USD": 8382.324807563082,
+      "std": 339.38869667629695
+    },
+    {
+      "feature": "Expensas_num",
+      "aumento_MAE_USD": 7312.456124667097,
+      "std": 381.4339606140551
+    },
+    {
+      "feature": "Latitud",
+      "aumento_MAE_USD": 5718.147675104697,
+      "std": 703.6248751909925
+    },
+    {
+      "feature": "Baños",
+      "aumento_MAE_USD": 4654.455686942946,
+      "std": 516.8520372710632
+    },
+    {
+      "feature": "Antiguedad",
+      "aumento_MAE_USD": 3617.39003120735,
+      "std": 218.5652906634124
+    },
+    {
+      "feature": "Baulera",
+      "aumento_MAE_USD": 2070.015963396928,
+      "std": 172.28204238001453
+    },
+    {
+      "feature": "Estado",
+      "aumento_MAE_USD": 1418.6404270467349,
+      "std": 73.36390612562727
+    }
+  ]
+}

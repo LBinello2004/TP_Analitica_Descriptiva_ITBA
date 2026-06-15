@@ -1,67 +1,89 @@
-# Plan — Reestructuración de la presentación ejecutiva (12 slides)
+# Plan - Presentacion ejecutiva (12 diapositivas)
 
-## Contexto
+## Objetivo
 
-La presentación ejecutiva (`presentacion/Presentacion_Ejecutiva_Flip_CABA.pptx`, generada por `presentacion/build_deck.js`) está bien de diseño (sistema editorial navy+terracota, sin cajas, running head), pero el usuario definió una **nueva estructura de contenido** de 12 slides y una regla firme: **todo gráfico del deck debe existir en un notebook de análisis** (EDA). Si un gráfico necesario no está en un notebook, se agrega al notebook correspondiente y se re-ejecuta, y el deck usa una versión propia (navy+terracota) calculada con la **misma definición** para que los números coincidan exactamente.
+La presentacion debe explicar el proyecto a un publico directivo o no tecnico en 15-20 minutos:
 
-Decisiones del usuario en esta ronda:
-- **Sacar** el insight de "descuento por barrio" (no lo considera clave).
-- **Mantener** precio por barrio como insight.
-- Slides 7 y 8 = **Paradoja de accesibilidad** + **Prima de las mejoras**.
-- **Partir** la slide de "Dataset + Fuentes" en **2** slides.
-- Slide 4/5 "Análisis realizados" debe entenderlo **cualquiera** (no técnico).
-- Slide del modelo: rendimiento de **ambos** modelos + **variables más importantes**.
-- El ejemplo (Belgrano + predicción de modelos) ya está bien y se conserva.
+> Un inversor enfrenta miles de avisos dificiles de comparar. El proyecto transforma esos datos en un proceso para decidir donde buscar, que propiedades investigar y que validar antes de invertir.
 
-## Estructura final (12 slides)
+Las versiones anteriores se conservan. La revision actual se genera en `presentacion/Presentacion_Ejecutiva_Flip_CABA_v4.pptx` mediante `presentacion/build_deck_v2.py`.
 
-| # | Slide | Contenido | Gráfico / fuente |
-|---|-------|-----------|------------------|
-| 1 | Portada | Título, equipo, ITBA | Mapa decorativo (sin escala) |
-| 2 | Problema de negocio (Flipper) | El flipper como interlocutor; mercado heterogéneo; hoy se decide a ojo | Stats (sin gráfico de datos) |
-| 3 | Dataset y fuentes | De dónde salen los datos (Argenprop, GCBA, OSM), qué representa cada fila, tamaño | Diagrama de fuentes |
-| 4 | Construcción del dataset | Transformaciones: geocodificación → enriquecimiento → limpieza/imputación → índices; embudo 12.518→7.245 | Embudo de etapas (diagrama) |
-| 5 | Análisis realizados | Overview **no técnico** de lo hecho: exploración, segmentación, tests de hipótesis, índice de oportunidad, modelo | Mapa de pasos (diagrama) |
-| 6 | Insight: el barrio define el precio | Precio/m² por barrio (2,7x); ε²=0,30 | **05 c33** (existe) ✓ |
-| 7 | Insight: paradoja de accesibilidad | Zonas más accesibles ~12% más baratas/m² → ineficiencia; efecto chico (ε²=0,02) enmarcado como tendencia | **Agregar a 06** (tabla c31ed20d1) |
-| 8 | Insight: la prima de las mejoras | Mejor dotación se publica +USD 280/m² (hasta +845); valida el flip; rho=0,19 | **Agregar a 06** (tabla cf74646ae) |
-| 9 | Ejemplo: propiedad priorizada + modelo | Belgrano, V. de Obligado 2600; comparable −34,3%; Ridge/RF +8–10% | (se conserva, ya está bien) |
-| 10 | Modelo | Rendimiento Ridge vs RF (MAE/MAPE/R²) + **feature importance** | Tabla (existe) + **feature importance 10 c27/28** ✓ |
-| 11 | Conclusión | Recomendaciones + impacto cuantificado | (sin gráfico) |
-| 12 | Futuro | Cómo seguir, evolución, ampliaciones | (sin gráfico) |
+## Principios
 
-Nota: la nueva estructura **no tiene** una slide dedicada de "producto/embudo" (la del deck actual). El embudo barrio→propiedad→validación se absorbe en la slide 5 (análisis realizados) y queda demostrado en el ejemplo (slide 9).
+- Priorizar decisiones y consecuencias de negocio sobre tecnicas.
+- Usar una idea principal y un titulo concluyente por diapositiva.
+- Seguir el vocabulario simple de los notebooks.
+- Presentar el indice como priorizacion y el modelo como segunda opinion.
+- No confundir precios publicados con precios de cierre.
+- No afirmar causalidad, rentabilidad ni ROI con los datos actuales.
+- Respaldar cada grafico analitico con las definiciones de los notebooks.
 
-## Estrategia de gráficos (todos respaldados por notebook)
+## Estructura final
 
-**Existen y se reutilizan (restilizados navy+terracota, misma definición):**
-- Precio/m² por barrio → `notebooks/05_EDA_Y_Clusters.ipynb` celda 33 (y datos en 06). Ya coincide exacto con el deck.
-- Feature importance (permutation) → `notebooks/10_Prediccion.ipynb` celda 27/28.
+| # | Funcion | Titulo | Contenido | Recurso |
+|---|---|---|---|---|
+| 1 | Presentar | **Priorizacion de oportunidades de flip inmobiliario en CABA** | Proyecto, equipo y propuesta de valor | Mapa decorativo |
+| 2 | Problema | **Miles de avisos, pero poca evidencia para decidir** | Informacion dispersa y dificultad para comparar antes de comprometer capital | Cifras de contexto |
+| 3 | Modelo de negocio | **El resultado de un flip se define antes de empezar la obra** | Comprar bien, mejorar con criterio y revender con margen. El analisis mejora la seleccion de compra; todavia no calcula ROI | Flujo comprar -> mejorar -> revender |
+| 4 | Datos | **Integramos publicaciones con informacion territorial** | Argenprop, GCBA y OpenStreetMap; que representa cada fila | Diagrama de fuentes |
+| 5 | Señales | **Cuatro señales para decidir que avisos merecen una revision** | Precio de entrada, margen de mejora, mercado de salida y segunda opinion | Cuatro criterios + embudo 12.518 -> 7.245 -> 3.129 |
+| 6 | Solucion | **Transformamos datos en un proceso de decision** | Explorar, comparar, priorizar, contrastar y validar | Flujo barrio -> propiedad -> validacion |
+| 7 | Insight 1 | **El barrio fija el punto de entrada; los amenities agregan valor, pero no alcanzan solos** | Precio por m2 según barrio y asociación entre dotación de amenities y precio. Diferenciar señal principal de complemento | Precio por barrio del notebook 05 + amenities del notebook 06 |
+| 8 | Insight 2 | **CABA no es un único mercado: identificamos seis perfiles con lógicas distintas** | PCA explicado como tres lentes comerciales y clusters expresados como perfiles de mercado. Belgrano pertenece a alto valor por m2 | PCA del notebook 09 + clusters del notebook 05 |
+| 9 | Paso 3 | **El modelo aporta una segunda opinion sobre el precio** | Superficie, expensas, ubicacion, baños, antigüedad, estado y amenities. No estima reventa | Importancia de variables del notebook 10 |
+| 10 | Aplicacion | **Belgrano: una propiedad que reune las señales para investigar** | Barrio priorizado -> descuento y mejora -> segunda opinion; cerrar con validaciones pendientes | Ficha del caso reproducido |
+| 11 | Impacto | **La herramienta concentra el esfuerzo donde hay mas evidencia** | De 7.245 propiedades comparables a 3.129 casos elegibles; beneficios, metricas y reglas de uso | Embudo + tabla de modelos |
+| 12 | Futuro | **El siguiente paso es pasar de priorizacion a rentabilidad medida** | Precios de cierre, costos, historial, automatizacion y futuro ROI | Hoja de ruta |
 
-**Agregar a `notebooks/06_Hipotesis_Y_KPIs.ipynb` (2 celdas de gráfico, estilo azul EDA) + re-ejecutar:**
-1. **Paradoja de accesibilidad**: barras de `precio_m2` mediana por cuartil de accesibilidad (Baja 2222 → Alta 1963) — datos ya en celda `31ed20d1` (`precio_accesibilidad`).
-2. **Prima de mejoras**: barras de precio/m² por nivel de dotación de amenities (Baja/Media/Alta) y/o brecha por barrio — datos ya en celda `f74646ae` (`brecha_amenities_barrio`).
+## Logica narrativa
 
-**Descartar del deck (no se usan en la nueva estructura):** mapa analítico scatter, gráfico descuento/mejorable, amenities-por-rango, barras MAE.
+1. **Problema y negocio, slides 1-3:** por que el flipper necesita comprar bien antes de pensar en la obra.
+2. **Datos y solucion, slides 4-6:** que señales se construyeron y como forman un proceso de decision.
+3. **Insights y ejemplo, slides 7-10:** ubicación y producto -> perfiles de mercado -> segunda opinión -> caso Belgrano.
+4. **Impacto y futuro, slides 11-12:** que mejora hoy y que datos faltan para medir rentabilidad.
 
-**Mantener:** mapa decorativo de portada (es diseño, no afirma análisis).
+La conexion central debe quedar explicita:
 
-## Archivos a modificar
+> Los insights no son datos aislados. El barrio y el perfil comercial definen el contexto correcto; el descuento y el estado permiten identificar la propiedad; el modelo sirve para contrastar; el ejemplo demuestra la secuencia completa.
 
-- `notebooks/06_Hipotesis_Y_KPIs.ipynb` — insertar 2 celdas de gráfico (accesibilidad-paradoja tras `31ed20d1`; prima-mejoras tras `f74646ae`), estilo azul (#2F4B7C/#4C78A8/#72B7D2); re-ejecutar inplace con `jupyter nbconvert --execute --inplace`.
-- `presentacion/generar_graficos.py` — regenerar set de assets: mantener precio/barrio + mapa decorativo; **agregar** accesibilidad-paradoja, prima-mejoras y feature-importance (esta última reproduciendo el modelo del notebook 10, como en el patrón ya usado para el ejemplo); **quitar** map analítico, descuento/mejorable, amenities-rango, MAE.
-- `presentacion/build_deck.js` — reescribir la secuencia de slides a la nueva estructura de 12; nuevas slides 2/3/4/5; insights 6/7/8; slide 10 con tabla de rendimiento + feature importance; renumerar running head a `/12`.
+## Graficos principales
 
-## Verificación (end-to-end)
+- **Precio por m2 según barrio:** muestra que la ubicación condiciona el punto de entrada.
+- **Precio por m2 según dotación de amenities:** muestra una asociación positiva, pero complementaria.
+- **PCA en lenguaje de negocio:** resume amplitud, entorno urbano y confort.
+- **Clusters como perfiles comerciales:** muestra seis mercados con niveles de precio diferentes.
+- **Importancia de variables:** explica la segunda opinion del modelo sin tecnicismos.
+- **Mapa decorativo:** se mantiene solamente como recurso de portada.
 
-1. Re-ejecutar 06 sin errores; confirmar que las 2 celdas nuevas renderizan output (imagen) — `jupyter nbconvert --to notebook --execute --inplace`.
-2. Regenerar assets: `python presentacion/generar_graficos.py` (verificar 0 errores y que los números de accesibilidad/prima coinciden con los del notebook 06).
-3. Reconstruir deck: `node presentacion/build_deck.js`.
-4. Render para QA visual: export por PowerPoint COM (PowerShell) a PNG; inspeccionar las 12 slides (overlaps, overflow, contraste, márgenes); fix-and-verify al menos una vuelta.
-5. Limpiar temporales (carpetas render*, no dejar `_tmp*.ipynb`).
+## Cifras validadas
 
-## Notas de consistencia / honestidad
+- Base inicial: `12.518` avisos.
+- Base comparable: `7.245` propiedades.
+- Casos elegibles para investigar: `3.129`.
+- Belgrano: puesto `3`, `311` publicaciones y `138` oportunidades elegibles.
+- Precio mediano general: `USD 2.160/m2`; Belgrano: `USD 2.726/m2`.
+- Dotación alta de amenities: `USD 392/m2` por encima de la dotación baja; asociación baja (`rho = 0,19`).
+- PCA de amplitud: un componente resume `81,2%` de la variación.
+- PCA de entorno: tres componentes resumen `59,5%` de la variación.
+- El índice de confort tiene una correlación de `0,934` con la cantidad de amenities.
+- Belgrano, Recoleta y Retiro integran el perfil `Alto valor por m2`.
+- Caso Belgrano: precio publicado `USD 80.000`, comparable `USD 2.706/m2`, descuento `34,3%`, indice `77/100`.
+- Segunda opinion del caso: Ridge `+8,4%` y Random Forest `+9,6%`.
+- Metricas de test: Ridge MAE `USD 49.138`, MAPE `25,04%`, R2 `0,59`; Random Forest MAE `USD 41.337`, MAPE `21,13%`, R2 `0,69`.
+- El caso pertenece a train y se presenta como ejemplo ilustrativo, no como validacion fuera de muestra.
 
-- La paradoja de accesibilidad tiene **efecto chico** (ε²=0,02); enmarcarla como "tendencia / señal de ineficiencia", no como ley.
-- Los números del deck deben salir de la **misma definición** que el notebook (06 carga `Argenprop_limpio.csv` y desprefija; precio_m2 = Precio/Sup_Total). Verificado que sintetica_precio_m2 == Precio/Sup_Total (diff 0).
-- Mantener los disclaimers del proyecto (no es ROI, precios publicados, modelo = segunda opinión).
+## Limites visibles
+
+- Son precios publicados, no precios efectivos de cierre.
+- El estado mejorable no garantiza una refaccion rentable.
+- El indice ordena casos para investigar; no calcula rentabilidad.
+- El modelo aporta una segunda opinion; no reemplaza una tasacion.
+- Antes de invertir faltan precio negociado, costos de obra, impuestos, comisiones, aspectos legales y plazo de salida.
+
+## Verificacion
+
+1. Regenerar graficos y PPTX sin reemplazar versiones anteriores.
+2. Confirmar cifras y definiciones contra notebooks y archivos procesados.
+3. Validar que el PPTX tenga 12 diapositivas y todos los recursos embebidos.
+4. Exportar a PDF e imagen para revisar margenes, contraste y desbordes cuando PowerPoint permita la automatizacion.
+5. Ensayar entre 60 y 90 segundos por diapositiva.

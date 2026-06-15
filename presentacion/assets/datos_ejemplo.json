@@ -1,0 +1,31 @@
+{
+  "uso": "ejemplo ilustrativo; no es una validacion fuera de muestra",
+  "particion_modelo": "train",
+  "propiedad": {
+    "barrio": "Belgrano",
+    "calle": "Vuelta de Obligado",
+    "altura": 2600,
+    "ambientes": 2,
+    "estado": "A Refaccionar",
+    "superficie_total_m2": 45.0,
+    "link": "https://www.argenprop.com/departamento-en-venta-en-belgrano-2-ambientes--19003449"
+  },
+  "ranking": {
+    "precio_publicado_usd": 80000.0,
+    "precio_m2_usd": 1777.7777777777778,
+    "precio_m2_comparable_usd": 2705.6451612903224,
+    "subvaluacion_pct": 34.29375724457691,
+    "comparables": 38,
+    "indice_oportunidad": 76.74292336317828
+  },
+  "modelos": {
+    "ridge": {
+      "prediccion_usd": 86734.96905200659,
+      "diferencia_vs_publicado_pct": 8.418711315008242
+    },
+    "random_forest": {
+      "prediccion_usd": 87662.8261435569,
+      "diferencia_vs_publicado_pct": 9.578532679446127
+    }
+  }
+}
